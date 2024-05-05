@@ -892,7 +892,8 @@ void subtotal_posts::report_subtotal(const char *                     spec_fmt,
   xact.payee = out_date.str();
   xact._date = *range_start;
 
-  foreach (values_map::value_type& pair, values)
+  foreach (values_map::value_type& pair, values) {
+		std::cerr << "DO NOT SUBMIT: " << pair.second.account << " " << pair.second.value << '\n';
     handle_value(/* value=      */ pair.second.value,
                  /* account=    */ pair.second.account,
                  /* xact=       */ &xact,
@@ -900,6 +901,7 @@ void subtotal_posts::report_subtotal(const char *                     spec_fmt,
                  /* handler=    */ handler,
                  /* date=       */ *range_finish,
                  /* act_date_p= */ false);
+	}
 
   values.clear();
 }

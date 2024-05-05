@@ -109,6 +109,7 @@ post_handler_ptr chain_post_handlers(post_handler_ptr base_handler,
                                      report_t&        report,
                                      bool             for_accounts_report)
 {
+	std::cerr << "DO NOT SUBMIT: chain_post_handlers\n";
   post_handler_ptr       handler(base_handler);
   predicate_t            display_predicate;
   predicate_t            only_predicate;
@@ -116,10 +117,17 @@ post_handler_ptr chain_post_handlers(post_handler_ptr base_handler,
 
   expr_t& expr(report.HANDLER(amount_).expr);
   expr.set_context(&report);
+	std::cerr << "DO NOT SUBMIT: amount_: " << (report.HANDLED(amount_) ? report.HANDLER(amount_).expr.text() : "<unhandled>") << "\n";
 
   report.HANDLER(total_).expr.set_context(&report);
+	std::cerr << "DO NOT SUBMIT: total_: " << (report.HANDLED(total_) ? report.HANDLER(total_).str() : "<unhandled>") << "\n";
   report.HANDLER(display_amount_).expr.set_context(&report);
+	std::cerr << "DO NOT SUBMIT: display_amount_: " << report.HANDLER(display_amount_).str() << "\n";
   report.HANDLER(display_total_).expr.set_context(&report);
+	std::cerr << "DO NOT SUBMIT: display_total_: " << report.HANDLER(display_total_).str() << "\n";
+	std::cerr << "DO NOT SUBMIT: historical: " << report.HANDLED(historical) << "\n";
+	std::cerr << "DO NOT SUBMIT: revalued: " << report.HANDLED(revalued) << "\n";
+	std::cerr << "DO NOT SUBMIT: no-revalued: " << report.HANDLED(no_revalued) << "\n";
 
   if (! for_accounts_report) {
     // Make sure only forecast postings which match are allowed through

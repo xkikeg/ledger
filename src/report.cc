@@ -144,8 +144,10 @@ void report_t::normalize_options(const string& verb)
   // using -b or -e).  Then, if no _duration_ was specified (such as monthly),
   // then ignore the period since the begin/end are the only interesting
   // details.
-  if (HANDLED(period_))
+  if (HANDLED(period_)) {
+		std::cerr << "DO NOT SUBMIT: " << HANDLER(period_).str() << "\n";
     normalize_period();
+  }
 
   // If -j or -J were specified, set the appropriate format string now so as
   // to avoid option ordering issues were we to have done it during the
@@ -345,6 +347,7 @@ namespace {
 
 void report_t::posts_report(post_handler_ptr handler)
 {
+	std::cerr << "DO NOT SUBMIT: posts_report\n";
   handler = chain_post_handlers(handler, *this);
   if (HANDLED(group_by_)) {
     unique_ptr<post_splitter>
@@ -363,6 +366,7 @@ void report_t::posts_report(post_handler_ptr handler)
 
 void report_t::generate_report(post_handler_ptr handler)
 {
+	std::cerr << "DO NOT SUBMIT: generate_report\n";
   handler = chain_handlers(handler, *this);
 
   generate_posts_iterator walker
@@ -376,6 +380,7 @@ void report_t::generate_report(post_handler_ptr handler)
 
 void report_t::xact_report(post_handler_ptr handler, xact_t& xact)
 {
+	std::cerr << "DO NOT SUBMIT: xact_report\n";
   handler = chain_handlers(handler, *this);
 
   xact_posts_iterator walker(xact);

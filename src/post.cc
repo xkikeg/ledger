@@ -645,6 +645,10 @@ void post_t::add_to_value(value_t& value, const optional<expr_t&>& expr) const
     bind_scope_t bound_scope(*expr->get_context(),
                              const_cast<post_t&>(*this));
 #if 1
+		std::cerr << "DO NOT SUBMIT: scope: " << bound_scope.description() << "\n";
+		std::cerr << "DO NOT SUBMIT: expr: ";
+		expr->print(std::cerr);
+		std::cerr << "\n";
     value_t temp(expr->calc(bound_scope));
     add_or_set_value(value, temp);
 #else

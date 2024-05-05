@@ -121,7 +121,9 @@ void expr_t::parse(std::istream& in, const parse_flags_t& flags,
 void expr_t::compile(scope_t& scope)
 {
   if (! compiled && ptr) {
+		std::cerr << "expr_t::compile(): before ptr->compile() " << ptr;
     ptr = ptr->compile(scope);
+		std::cerr << "expr_t::compile(): after ptr->compile() " << ptr;
     base_type::compile(scope);
   }
 }
@@ -238,6 +240,7 @@ bool merged_expr_t::check_for_single_identifier(const string& expr)
 
 void merged_expr_t::compile(scope_t& scope)
 {
+	std::cerr << "DO NOT SUBMIT: merged_expr_t::compile()\n";
   if (exprs.empty()) {
     parse(base_expr);
   } else {
@@ -256,7 +259,9 @@ void merged_expr_t::compile(scope_t& scope)
     parse(buf.str());
   }
 
+	std::cerr << "DO NOT SUBMIT: before merged_expr_t::compile\n";
   expr_t::compile(scope);
+	std::cerr << "DO NOT SUBMIT: after merged_expr_t::compile\n";
 }
 
 expr_t::ptr_op_t as_expr(const value_t& val)

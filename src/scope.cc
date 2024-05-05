@@ -76,6 +76,20 @@ expr_t::ptr_op_t symbol_scope_t::lookup(const symbol_t::kind_t kind,
   return child_scope_t::lookup(kind, name);
 }
 
+bind_scope_t::bind_scope_t(scope_t& _parent,
+													 scope_t& _grandchild)
+	: child_scope_t(_parent), grandchild(_grandchild) {
+  DEBUG("scope.symbols",
+        "Binding scope " << &_parent << " with " << &_grandchild);
+  TRACE_CTOR(bind_scope_t, "scope_t&, scope_t&");
+}
+
+void bind_scope_t::define(const symbol_t::kind_t kind, const string& name,
+													expr_t::ptr_op_t def) {
+	parent->define(kind, name, def);
+	grandchild.define(kind, name, def);
+}
+
 value_t& call_scope_t::resolve(const std::size_t index,
                                value_t::type_t   context,
                                const bool        required)

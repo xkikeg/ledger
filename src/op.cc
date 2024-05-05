@@ -38,6 +38,56 @@
 
 namespace ledger {
 
+void expr_t::op_t::acquire() const {
+	DEBUG("op.memory",
+				"Acquiring " << this << ", refc now " << refc + 1);
+	assert(refc >= 0);
+	// DO NOT SUBMIT
+	// Check recurse
+	bool found_this = false;
+	std::vector<const expr_t::op_t*> cursors;
+	cursors.push_back(this);
+	while (!cursors.empty()) {
+		const auto* c = cursors.back();
+		cursors.pop_back();
+		if (const auto* l = c->left_.get(); l != nullptr) {
+			if (l == this) {
+				found_this = true;
+				break;
+			}
+			cursors.push_back(l);
+		}
+		if (c->data.which() != 1) {
+			continue;
+		}
+		if (const auto* r = boost::get<ptr_op_t>(c->data).get(); r != nullptr) {
+			if (r == this) {
+				found_this = true;
+				break;
+			}
+			cursors.push_back(r);
+		}
+	}
+	if (found_this) {
+		std::cerr << "failed: this has cyclic dependencies\n";
+		this->dump(std::cerr);
+		debug_assert("cyclic", __func__, __FILE__, __LINE__);
+	}
+	if (refc >= 100) {
+		debug_assert("refc overflow", __func__, __FILE__, __LINE__);
+	}
+	// DO NOt SUBMIT
+	refc++;
+}
+
+void expr_t::op_t::release() const {
+	DEBUG("op.memory",
+				"Releasing " << this << ", refc now " << refc - 1);
+	assert(refc > 0);
+	if (--refc == 0)
+		checked_delete(this);
+}
+	
 void intrusive_ptr_add_ref(const expr_t::op_t * op)
 {
   op->acquire();
@@ -101,6 +151,10 @@ expr_t::ptr_op_t expr_t::op_t::compile(scope_t& scope, const int depth,
   }
 #endif
 
+	std::cerr << "DO NOT SUBMIT: op_t::compile(): this=" << this << " ";
+	this->print(std::cerr);
+	std::cerr << "\n";
+
   assert(kind < LAST);
 
   if (is_ident()) {
@@ -146,6 +200,7 @@ expr_t::ptr_op_t expr_t::op_t::compile(scope_t& scope, const int depth,
       DEBUG("expr.compile",
             "Defining " << left()->as_ident() << " in " << scope_ptr);
       scope_ptr->define(symbol_t::FUNCTION, left()->as_ident(), node);
+			DEBUG("expr.compile", "finish compiling");
       break;
     }
 

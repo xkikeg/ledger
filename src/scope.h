@@ -169,12 +169,7 @@ public:
   scope_t& grandchild;
 
   explicit bind_scope_t(scope_t& _parent,
-                        scope_t& _grandchild)
-    : child_scope_t(_parent), grandchild(_grandchild) {
-    DEBUG("scope.symbols",
-          "Binding scope " << &_parent << " with " << &_grandchild);
-    TRACE_CTOR(bind_scope_t, "scope_t&, scope_t&");
-  }
+                        scope_t& _grandchild);
   virtual ~bind_scope_t() {
     TRACE_DTOR(bind_scope_t);
   }
@@ -184,10 +179,7 @@ public:
   }
 
   virtual void define(const symbol_t::kind_t kind, const string& name,
-                      expr_t::ptr_op_t def) {
-    parent->define(kind, name, def);
-    grandchild.define(kind, name, def);
-  }
+                      expr_t::ptr_op_t def);
 
   virtual expr_t::ptr_op_t lookup(const symbol_t::kind_t kind,
                                   const string& name) {

@@ -31,6 +31,9 @@
 
 #include <ledger.hh>
 
+// DO NOT SUBMIT
+#include <execinfo.h>
+
 #include "times.h"
 
 /**********************************************************************
@@ -44,6 +47,24 @@ namespace ledger {
 
 DECLARE_EXCEPTION(assertion_failed, std::logic_error);
 
+namespace {
+
+void print_stack_trace() {
+	// DO NOT SUBMIT
+	const int kMaxFrames = 512;
+	void* callStack[kMaxFrames];
+	int count = backtrace(callStack, kMaxFrames);
+	char** symbols = backtrace_symbols(callStack, count);
+	if (symbols != nullptr) {
+		for (int i = 0; i < count; ++i) {
+			std::cerr << symbols[i] << '\n';
+		}
+	}
+	free(symbols);
+}
+
+}
+
 void debug_assert(const string& reason,
                   const string& func,
                   const string& file,
@@ -52,6 +73,7 @@ void debug_assert(const string& reason,
   std::ostringstream buf;
   buf << "Assertion failed in " << file_context(file, line)
       << func << ": " << reason;
+	print_stack_trace();
   throw assertion_failed(buf.str());
 }
 

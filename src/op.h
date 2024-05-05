@@ -218,6 +218,7 @@ public:
   }
   void set_left(const ptr_op_t& expr) {
     assert(kind > TERMINALS || kind == IDENT || is_scope());
+		assert(this != expr.get());
     left_ = expr;
   }
 
@@ -239,6 +240,7 @@ public:
   }
   void set_right(const ptr_op_t& expr) {
     assert(kind > TERMINALS);
+		assert(this != expr.get());
     data = expr;
   }
   bool has_right() const {
@@ -248,19 +250,8 @@ public:
   }
 
 private:
-  void acquire() const {
-    DEBUG("op.memory",
-          "Acquiring " << this << ", refc now " << refc + 1);
-    assert(refc >= 0);
-    refc++;
-  }
-  void release() const {
-    DEBUG("op.memory",
-          "Releasing " << this << ", refc now " << refc - 1);
-    assert(refc > 0);
-    if (--refc == 0)
-      checked_delete(this);
-  }
+  void acquire() const;
+  void release() const;
 
   friend void intrusive_ptr_add_ref(const op_t * op);
   friend void intrusive_ptr_release(const op_t * op);
